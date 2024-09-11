@@ -38,8 +38,8 @@ func CreateTable(db *sql.DB) {
 }
 
 // Adds a record to database
-func AddRecord(db *sql.DB, Date string, Gun string, Shots string, Notes int) {
-  records := "INSERT INTO bales(Date, Gun, Shots, Notes) VALUES (?, ?, ?, ?)"
+func AddRecord(db *sql.DB, Date string, Gun string, Shots int, Notes string) {
+  records := "INSERT INTO shots(Date, Gun, Shots, Notes) VALUES (?, ?, ?, ?)"
   query, err := db.Prepare(records)
   if err != nil {
     log.Fatal(err)
@@ -91,11 +91,11 @@ func FetchRecord(db *sql.DB, record *sql.Rows, err error) {
   for record.Next() {
     recordCount++
     record.Scan(&id, &Date, &Gun, &Shots, &Notes)
-    totalSlice = append(totalSlice, NumOfBales)
+    totalSlice = append(totalSlice, Shots)
     t.AppendRows([]table.Row{{id, Date, Gun, Shots, Notes}})
   }
 
-  // adds up the slice to tell you the total number of bales
+  // adds up the slice to tell you the total number of shots 
   for _, num := range totalSlice {
     total += num
   }

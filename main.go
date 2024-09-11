@@ -64,6 +64,7 @@ func main() {
     date         string
     dateFrom     string
     custom       string
+    notes        string
   )
 
   flag.BoolVar(        &info,        "i", false,
@@ -122,6 +123,8 @@ func main() {
   flag.StringVar(    &custom,        "c",    "",
     "Custom SQL request. Requires -l. Example:\nbales -t -l -c \"SELECT * FROM bales WHERE " +
     "strftime('%d', date) BETWEEN '01' AND '03'\"")
+  flag.StringVar(    &notes,      "note",    "",
+    "Any notes youd like to add.")
 
   flag.IntVar(       &number,        "n",     0,
     "The number of shots to add/ or the id of the record to delete .")
@@ -134,7 +137,7 @@ func main() {
        "It's useful to have the data to see how many shots you have fired through each gun.\n\n" +
        "Usage:\n\n" +
        "shots [-t] [-l [-g gun] [-year year] [-month month] [-day day] " +
-       "[-a [-date YYYY-MM-DD] -g group -n num] [-d [-n num || -g group]]\n\n" +
+       "[-a [-date YYYY-MM-DD] -g gun -n num] [-d [-n num || -g gun]]\n\n" +
        "Available arguments:\n"
       fmt.Fprintf(w, description, os.Args[0])
       flag.PrintDefaults()
@@ -289,10 +292,10 @@ func main() {
         fmt.Println("Records deleted!")
         f.Exit(db, 0)
       } else {
-        fmt.Println("Ok, not deleting group '" + group + "'.")
+        fmt.Println("Ok, not deleting gun '" + gun + "'.")
         f.Exit(db, 0)
       }
-    } else if number != 0 && group != "" {
+    } else if number != 0 && gun != "" {
       fmt.Println("Error:")
       fmt.Println("Can't use -n and -g together. Try -h for usage")
       f.Exit(db, 1)
