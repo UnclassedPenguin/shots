@@ -18,6 +18,7 @@ Hmm..
 ### To-do
 - Create a docs page on docs.unclassed.ca/shots
 - Possibly Remove Notes. They break the formatting if they are too long...
+  - maybe I dont need to remove it. But maybe I need to not show it when you list...unless you specifically specify to list notes...
 - ~~Add a projectile weight category~~
 - ~~Add a projectile type category~~
 - ~~Add a projectile cost category~~
