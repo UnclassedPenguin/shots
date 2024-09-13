@@ -16,6 +16,7 @@ Hmm..
 //d.AddRecord(db, timeStr, gun, ammoType, ammoWeight, number, ammoIndivPrice, AmmoTotalPrice, notes)
 
 ### To-do
+- Create a docs page on docs.unclassed.ca/shots
 - Possibly Remove Notes. They break the formatting if they are too long...
 - ~~Add a projectile weight category~~
 - ~~Add a projectile type category~~
