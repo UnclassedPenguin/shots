@@ -28,8 +28,12 @@ func CreateTable(db *sql.DB) {
         id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
         "Date" TEXT,
         "Gun" TEXT,
+        "AmmoType" TEXT,
+        "AmmoWeight" INT,
         "Shots" TEXT,
-        "Notes" INT);`
+        "AmmoPrice" INT,
+        "TotalPrice" INT,
+        "Notes" TEXT);`
   query, err := db.Prepare(shotsTable)
   if err != nil {
       log.Fatal(err)
@@ -38,13 +42,13 @@ func CreateTable(db *sql.DB) {
 }
 
 // Adds a record to database
-func AddRecord(db *sql.DB, Date string, Gun string, Shots int, Notes string) {
-  records := "INSERT INTO shots(Date, Gun, Shots, Notes) VALUES (?, ?, ?, ?)"
+func AddRecord(db *sql.DB, Date string, Gun string, AmmoType string, AmmoWeight int, Shots int, AmmoPrice float64, TotalPrice float64, Notes string) {
+  records := "INSERT INTO shots(Date, Gun, AmmoType, AmmoWeight, Shots, AmmoPrice, TotalPrice, Notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
   query, err := db.Prepare(records)
   if err != nil {
     log.Fatal(err)
   }
-  _, err = query.Exec(Date, Gun, Shots, Notes)
+  _, err = query.Exec(Date, Gun, AmmoType, AmmoWeight, Shots, AmmoPrice, TotalPrice, Notes)
   if err != nil {
     log.Fatal(err)
   }
@@ -77,7 +81,11 @@ func FetchRecord(db *sql.DB, record *sql.Rows, err error) {
     id int
     Date string
     Gun string
+    AmmoType string
+    AmmoWeight int
     Shots int
+    AmmoPrice float64
+    TotalPrice float64
     Notes string
     recordCount int
   )
@@ -85,14 +93,14 @@ func FetchRecord(db *sql.DB, record *sql.Rows, err error) {
   t := table.NewWriter()
   t.SetOutputMirror(os.Stdout)
 
-  t.AppendHeader(table.Row{"id", "Date", "Gun", "Shots", "Notes"})
+  t.AppendHeader(table.Row{"id", "Date", "Gun", "AmmoType", "AmmoWeight", "Shots", "AmmoPrice", "TotalPrice", "Notes"})
 
   // Loop over records and add them to the table
   for record.Next() {
     recordCount++
-    record.Scan(&id, &Date, &Gun, &Shots, &Notes)
+    record.Scan(&id, &Date, &Gun, &AmmoType, &AmmoWeight, &Shots, &AmmoPrice, &TotalPrice, &Notes)
     totalSlice = append(totalSlice, Shots)
-    t.AppendRows([]table.Row{{id, Date, Gun, Shots, Notes}})
+    t.AppendRows([]table.Row{{id, Date, Gun, AmmoType, AmmoWeight, Shots, AmmoPrice, TotalPrice, Notes}})
   }
 
   // adds up the slice to tell you the total number of shots 
@@ -100,7 +108,7 @@ func FetchRecord(db *sql.DB, record *sql.Rows, err error) {
     total += num
   }
 
-  t.AppendFooter(table.Row{"", "", "", "Total:", total})
+  t.AppendFooter(table.Row{"", "", "", "", "Total:", total})
   t.SetStyle(table.StyleLight)
 
   // To have a line separate all rows, uncomment next line.

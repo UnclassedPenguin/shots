@@ -5,7 +5,7 @@
 //  
 // Author: Tyler(UnclassedPenguin)
 //    URL: https://unclassed.ca
-// GitHub: https://github.com/UnclassedPenguin/bales/
+// GitHub: https://github.com/UnclassedPenguin/shots/
 //   Desc: A program to keep track of how many shots you've fired through 
 //         different guns.
 //
@@ -55,15 +55,21 @@ func main() {
     showOnlyCurrentMonth bool
     today        bool
     showSql      bool
-    number       int
     between      string
-    gun          string
     year         string
     month        string
     day          string
     date         string
     dateFrom     string
     custom       string
+
+    
+    gun          string
+    ammoType     string
+    ammoWeight   int
+    ammoIndivPrice float64
+    ammoTotalPrice float64
+    number       int
     notes        string
   )
 
@@ -104,7 +110,7 @@ func main() {
 
   flag.StringVar(   &between,  "between",    "",
     "Lists everything between specific dates. Must be two full YYYY-MM-DD separated by a space.\n" +
-    "i.e. bales -l -between \"2022-06-01 2023-02-01\"")
+    "i.e. shots -l -between \"2022-06-01 2023-02-01\"")
   flag.StringVar(     &gun,        "g",    "",
     "If adding(-a): The 'name' of the gun to add to database.\n" +
     "If listing(-l): The 'name' of the gun to list. Can be singular, or combined by using\n" +
@@ -121,11 +127,18 @@ func main() {
   flag.StringVar(  &dateFrom,     "from",    "",
     "List from specified date to current date. Date must be YYYY-MM-DD requires -l")
   flag.StringVar(    &custom,        "c",    "",
-    "Custom SQL request. Requires -l. Example:\nbales -t -l -c \"SELECT * FROM bales WHERE " +
+    "Custom SQL request. Requires -l. Example:\nshots -t -l -c \"SELECT * FROM shots WHERE " +
     "strftime('%d', date) BETWEEN '01' AND '03'\"")
   flag.StringVar(    &notes,      "note",    "",
     "Any notes youd like to add.")
+  flag.StringVar( &ammoType, "at", "",
+    "The Ammo type you shot.")
+ 
+  flag.Float64Var( &ammoIndivPrice, "ap", 0, 
+    "The price of an individual bullet that you were shooting.")
 
+  flag.IntVar( &ammoWeight, "aw", 0,
+    "The weight of the bullets you shot, in grains.")
   flag.IntVar(       &number,        "n",     0,
     "The number of shots to add/ or the id of the record to delete .")
 
@@ -258,13 +271,18 @@ func main() {
   // Handles the command line way to add record
   if add && gun != "" && number != 0 {
 
-    fmt.Println("Date    : ", timeStr)
-    fmt.Println("Gun     : ", gun)
-    fmt.Println("Shots   : ", number)
-    fmt.Println("Notes   : ", notes)
+    fmt.Println("Date........: ", timeStr)
+    fmt.Println("Gun.........: ", gun)
+    fmt.Println("Ammo Type...: ", ammoType)
+    fmt.Println("Ammo Weight.: ", ammoWeight)
+    fmt.Println("Shots.......: ", number)
+    fmt.Println("Price.......: ", ammoIndivPrice)
+    ammoTotalPrice = ammoIndivPrice * float64(number)
+    fmt.Println("Total Price.: ", ammoTotalPrice)
+    fmt.Println("Notes.......: ", notes)
     fmt.Println("")
     fmt.Println("Adding record...")
-    d.AddRecord(db, timeStr, gun, number, notes)
+    d.AddRecord(db, timeStr, gun, ammoType, ammoWeight, number, ammoIndivPrice, ammoTotalPrice, notes)
     fmt.Println("Record added!")
     f.Exit(db, 0)
   } else if add {
@@ -564,7 +582,7 @@ func main() {
     }
     fmt.Println(stdout.String())
 
-    // git commit -m 'update bales database'
+    // git commit -m 'update shots database'
     cmd, stdout = exec.Command("git", "commit", "-m", "'update shots database'"), new(strings.Builder)
     cmd.Dir = dbDir
     cmd.Stdout = stdout
